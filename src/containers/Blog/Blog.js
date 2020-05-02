@@ -5,6 +5,8 @@ import FullPost from '../../components/FullPost/FullPost';
 import NewPost from '../../components/NewPost/NewPost';
 import './Blog.css';
 import axios from 'axios';
+// individual axios instance I created
+//import axiosInstance from '../../axios'; 
 
 class Blog extends Component {
     state = {

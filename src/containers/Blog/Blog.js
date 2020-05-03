@@ -27,8 +27,8 @@ class Blog extends Component {
                 })
                 this.setState({ posts: updatedPosts })
             })
-            .catch(error => { 
-                this.setState({error: true});
+            .catch(error => {
+                this.setState({ error: true });
                 console.log(error);
             });
     }
@@ -38,7 +38,7 @@ class Blog extends Component {
     }
 
     render() {
-        let posts = <p style={{textAlign: 'center'}}>Something went wrong!</p>
+        let posts = <p style={{ textAlign: 'center' }}>Something went wrong!</p>
         if (!this.state.error) {
             posts = this.state.posts.map(post => {
                 return <Post
@@ -50,7 +50,15 @@ class Blog extends Component {
         }
 
         return (
-            <div>
+            <div className="Blog">
+                <header>
+                    <nav>
+                        <ul>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/new-post">New Post</a></li>
+                        </ul>
+                    </nav>
+                </header>
                 <section className="Posts">
                     {posts}
                 </section>

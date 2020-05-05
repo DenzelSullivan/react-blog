@@ -1,65 +1,54 @@
 import React, { Component } from 'react';
+import { Route, NavLink, Switch, Redirect } from 'react-router-dom';
 
-import Post from '../../components/Post/Post';
-import FullPost from '../../components/FullPost/FullPost';
-import NewPost from '../../components/NewPost/NewPost';
 import './Blog.css';
-import axios from 'axios';
-// individual axios instance I created
-//import axiosInstance from '../../axios'; 
+import Posts from './Posts/Posts';
+//import NewPost from './NewPost/NewPost';
+import asyncComponent from '../../hoc/asyncComponent';
+
+//React.lazy() is the new way to implement this without creating a new 
+// component
+const AsyncNewPost = asyncComponent(() => {
+    return import('./NewPost/NewPost');
+});
 
 class Blog extends Component {
     state = {
-        posts: [],
-        selectedPostId: null,
-        error: false
+        auth: true
     }
-
-    componentDidMount() {
-        axios.get("/posts")
-            .then(response => { // promise
-                const posts = response.data.slice(0, 4);
-                const updatedPosts = posts.map(post => {
-                    return {
-                        ...post,
-                        author: 'Max'
-                    }
-                })
-                this.setState({ posts: updatedPosts })
-            })
-            .catch(error => { 
-                this.setState({error: true});
-                console.log(error);
-            });
-    }
-
-    postSelectedHandler = (id) => {
-        this.setState({ selectedPostId: id });
-    }
-
     render() {
-        let posts = <p style={{textAlign: 'center'}}>Something went wrong!</p>
-        if (!this.state.error) {
-            posts = this.state.posts.map(post => {
-                return <Post
-                    key={post.id}
-                    title={post.title}
-                    author={post.author}
-                    clicked={() => this.postSelectedHandler(post.id)} />;
-            });
-        }
-
         return (
-            <div>
-                <section className="Posts">
-                    {posts}
-                </section>
-                <section>
-                    <FullPost id={this.state.selectedPostId} />
-                </section>
-                <section>
-                    <NewPost />
-                </section>
+            <div className="Blog">
+                <header>
+                    <nav>
+                        <ul>
+                            <li>
+                                {/* Way to change the active class name and style a specific link */}
+                                <NavLink
+                                    to="/posts/"
+                                    exact
+                                    activeClassName="my-active"
+                                    activeStyle={{
+                                        color: '#fa923f',
+                                        textDecoration: 'underline'
+                                    }}>Posts</NavLink></li>
+                            <li><NavLink to={{
+                                pathname: "/new-post",
+                                hash: '#submit',
+                                search: '?quick-submit=true'
+                                // example of a more complex way to use Link
+                            }}>New Post</NavLink></li>
+                        </ul>
+                    </nav>
+                </header>
+                <Switch>
+                    { this.state.auth ? 
+                        <Route path="/new-post" exact component={AsyncNewPost} /> : null}
+                    <Route path="/posts/" component={Posts} />
+                    <Route render={() => <h1>Not Found - Unknown Route Example</h1>} />
+                    {/* <Redirect from="/" to="/posts" /> */}
+                    {/* <Route path="/posts/" component={Posts} /> */}
+                </Switch>
             </div>
         );
     }
